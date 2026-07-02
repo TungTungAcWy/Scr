@@ -131,7 +131,7 @@ end)
 
 sections.hitbox:CreateToggle("Teamcheck", false, function(state) hitTeam = state end)
 sections.hitbox:CreateDropdown("team without hitbox", stored_teams, function(value) ignoreHitboxTeam = value end, "None", false)
-sections.hitbox:CreateSlider("Hitbox Size", 1, 1000, 5, true, function(value) hitSize = value end)
+sections.hitbox:CreateSlider("Hitbox Size", 1, 1367, 5, true, function(value) hitSize = value end)
 sections.hitbox:CreateSlider("Transparency Hitbox", 0, 100, 50, true, function(value) hitTrans = value / 100 end)
 sections.hitbox:CreateDropdown("Target Part Hitbox", {"HumanoidRootPart", "Head"}, function(value)
     for part, data in pairs(originalHitbox) do 
@@ -154,7 +154,7 @@ sections.player:CreateToggle("Instant Interact", true, function(state) instant =
 
 local wsInputVal, jpInputVal, gravInputVal = 16, 50, 196.2
 
-sections.player:CreateToggle("Apply 1,2,3", false, function(state)
+sections.player:CreateToggle("Apply ws,jp,grav", false, function(state)
     if state then
         if lp.Character and lp.Character:FindFirstChildOfClass("Humanoid") then
             lp.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = wsInputVal
@@ -170,9 +170,9 @@ sections.player:CreateToggle("Apply 1,2,3", false, function(state)
     end
 end)
 
-sections.player:CreateSlider("WalkSpeed Custom", 16, 500, 16, true, function(value) wsInputVal = value end)
-sections.player:CreateSlider("JumpPower Custom", 50, 500, 50, true, function(value) jpInputVal = value end)
-sections.player:CreateSlider("Gravity Custom", 0, 500, 196, true, function(value) gravInputVal = value end)
+sections.player:CreateSlider("WalkSpeed Custom", 16, 50000, 16, true, function(value) wsInputVal = value end)
+sections.player:CreateSlider("JumpPower Custom", 50, 50000, 50, true, function(value) jpInputVal = value end)
+sections.player:CreateSlider("Gravity Custom", 0, 50000, 196, true, function(value) gravInputVal = value end)
 
 sections.aim:CreateToggle("Enable Aim", false, function(state) aimbotEnabled = state end)
 sections.aim:CreateToggle("Wallcheck", false, function(state) aimWall = state end)
@@ -295,9 +295,9 @@ sections.esp_set:CreateColorpicker("Invisible Color", function(color) espColorIn
 -- TAB MISC
 local scriptsList = {
     ["ComboWick"] = "https://rawscripts.net/raw/Universal-Script-Combo-Wick-Cracked-92050", 
-    ["Fake animation (R15)"] = "https://raw.githubusercontent.com/CITY512/scripts/main/freeanims.lua", 
+    ["Fake animation"] = "https://raw.githubusercontent.com/CITY512/scripts/main/freeanims.lua", 
     ["zzz hub"] = "https://rawscripts.net/raw/Brookhaven-RP-ZZZ-Hub-Cracked-SOURCE-56578", 
-    ["Abusall (door)"] = "https://raw.githubusercontent.com/bocaj111004/Abysall/refs/heads/main/Loader.luau", 
+    ["Abusall"] = "https://raw.githubusercontent.com/bocaj111004/Abysall/refs/heads/main/Loader.luau", 
     ["Ringta (dead rail)"] = "https://raw.githubusercontent.com/erewe23/deadrailsring.github.io/refs/heads/main/ringta.lua", 
     ["GAE FakeAnimation"] = "https://rawscripts.net/raw/Universal-Script-GAE-SIMPLIFIED-27193", 
     ["jujutsuer v2"] = "https://rawscripts.net/raw/HEAD-OF-HEI-Jujutsu-Shenanigans-JujutsuerV2-92468", 
@@ -310,12 +310,12 @@ local scriptsList = {
     ["Bear hub"] = "https://raw.githubusercontent.com/Huylovemy/Bear-hud-t-h/refs/heads/main/Huylovevkmy", 
     ["daccau"] = "https://raw.githubusercontent.com/Luongdaynetroi/ScriptTongHop/refs/heads/main/.lua", 
     ["Onion13"] = "https://raw.githubusercontent.com/onion132005-bit/esponion.lua/refs/heads/main/onion13v9.lua",
-    ["Script  1"] = "",
-    ["Script  2"] = "",
+    ["Cat hub"] = "https://raw.githubusercontent.com/PEMBALAP-F1-0/SC/refs/heads/main/ELEMENRT%20MAGIC%20ARENA",
+    ["sword blox"] = "https://rawscripts.net/raw/Universal-Script-SwordBlox-39896",
     ["Script  3"] = "",
     ["Script  4"] = ""
 }
-local scriptKeys = {"ComboWick", "Fake animation (R15)", "zzz hub", "Abusall (door)", "Ringta (dead rail)", "GAE FakeAnimation", "jujutsuer v2", "foxname", "7yd7 emote", "Auto piano", "Spotlight v2", "TBO Real", "blackflash-chain", "Bear hub", "daccau", "Onion13", "Script  1", "Script  2", "Script  3", "Script  4"}
+local scriptKeys = {"ComboWick", "Fake animation (R15)", "zzz hub", "Abusall (door)", "Ringta (dead rail)", "GAE FakeAnimation", "jujutsuer v2", "foxname", "7yd7 emote", "Auto piano", "Spotlight v2", "TBO Real", "blackflash-chain", "Bear hub", "daccau", "Onion13", "Cat hub", "sword blox", "Script  3", "Script  4"}
 local selectedScriptLnk = "https://rawscripts.net/raw/Universal-Script-Combo-Wick-Cracked-92050"
 
 sections.hub:CreateDropdown("choose a script ", scriptKeys, function(value) 
@@ -346,8 +346,8 @@ sections.tool:CreateButton("Jeck off R6", function()
     task.spawn(function() loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))() end)
 end)
 
-sections.tool:CreateButton("Jeck off R15", function()
-    task.spawn(function() loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))() end)
+sections.tool:CreateButton("telekinesis", function()
+    task.spawn(function() loadstring(game:HttpGet(""))() end)
 end)
 
 
