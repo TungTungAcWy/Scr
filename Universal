@@ -8,10 +8,10 @@ gui_config = {
     Assets = false,
     MinHeight = 100,
     MaxHeight = 500,
-    InitialHeight = 350,
+    InitialHeight = 270,
     MinWidth = 200,
-    MaxWidth = 350,
-    InitialWidth = 550
+    MaxWidth = 400,
+    InitialWidth = 330
 }
 
 for _, v in Enum.Font:GetEnumItems() do
