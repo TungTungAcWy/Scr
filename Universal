@@ -7,10 +7,10 @@ gui_config = {
     Keybind = Enum.KeyCode.Insert,
     Assets = false,
     MinHeight = 100,
-    MaxHeight = 800,
+    MaxHeight = 500,
     InitialHeight = 450,
     MinWidth = 200,
-    MaxWidth = 800,
+    MaxWidth = 350,
     InitialWidth = 550
 }
 
@@ -38,7 +38,6 @@ local sections = {
     hitbox = tabs.main:CreateSection("HitBox Expander"),
     player = tabs.main:CreateSection("Local Player"),
     aim = tabs.main:CreateSection("Aimbot"),
-    float = tabs.main:CreateSection("Float", "right"),
     
     esp_main = tabs.esp:CreateSection("ESP"),
     esp_set = tabs.esp:CreateSection("ESP Setting", "right"),
@@ -46,6 +45,8 @@ local sections = {
     hub = tabs.misc:CreateSection("Scripts Hub"),
     tool = tabs.misc:CreateSection("Tool", "right"),
     teleport = tabs.misc:CreateSection("Teleport Position"),
+    float = tabs.misc:CreateSection("Float", "right"),
+    orbit_section = tabs.misc:CreateSection("Orbit Configuration"),
     lag = tabs.misc:CreateSection("Performance Booster", "right"),
 
     sys_control = tabs.settings:CreateSection("System Controls", "right") 
@@ -114,6 +115,13 @@ local floatPart = nil
 local floatSizeValue = 15
 local floatTransValue = 0.5
 local floatColorValue = Color3.fromRGB(0, 255, 255)
+
+local OrbitEnabled = false
+local TargetPlayerName = ""
+local OrbitMode = "Normal"
+local OrbitDistance = 5
+local OrbitSpeed = 2
+local currentAngle = 0
 
 local savedTeleportCFrame = nil
 
@@ -201,42 +209,6 @@ sections.aim:CreateSlider("Aimbot Smoothness", 0.05, 1, 0.25, false, function(va
 sections.aim:CreateSlider("FOV Radius Size", 10, 800, 100, true, function(value) aimFOVSize = value end)
 sections.aim:CreateDropdown("Aimbot Target", {"HumanoidRootPart", "Head"}, function(value) aimPart = value end, "HumanoidRootPart", false)
 
-sections.float:CreateButton("Float", function()
-    if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-        savedFloatCFrame = lp.Character.HumanoidRootPart.CFrame
-        if floatPart then pcall(function() floatPart:Destroy() end) floatPart = nil end
-        floatPart = Instance.new("Part")
-        floatPart.Size = Vector3.new(floatSizeValue, 1, floatSizeValue)
-        floatPart.CFrame = savedFloatCFrame * CFrame.new(0, -3.5, 0)
-        floatPart.Anchored = true
-        floatPart.Transparency = floatTransValue
-        floatPart.Material = Enum.Material.SmoothPlastic
-        floatPart.Color = floatColorValue
-        floatPart.Parent = workspace
-        lp.Character.HumanoidRootPart.CFrame = savedFloatCFrame
-    end
-end)
-
-sections.float:CreateButton("Delete Float", function()
-    savedFloatCFrame = nil
-    if floatPart then pcall(function() floatPart:Destroy() end) floatPart = nil end
-end)
-
-sections.float:CreateSlider("float Size", 5, 100000, 15, true, function(value)
-    floatSizeValue = value
-    if floatPart and floatPart.Parent then floatPart.Size = Vector3.new(value, 1, value) end
-end)
-
-sections.float:CreateColorpicker("float Color", function(color, transparency)
-    floatColorValue = color
-    if floatPart and floatPart.Parent then floatPart.Color = color end
-end)
-
-sections.float:CreateSlider("float Transparency", 0, 100, 50, true, function(value)
-    floatTransValue = value / 100
-    if floatPart and floatPart.Parent then floatPart.Transparency = floatTransValue end
-end)
-
 local toggle_box = sections.esp_main:CreateToggle("ESP Box", false, function(state) espBox = state end)
 sections.esp_main:CreateColorpicker("Box Color", function(color) espColors.Box = color end, false, false, toggle_box)
 
@@ -307,7 +279,7 @@ local scriptsList = {
     ["Fake animation"] = "https://raw.githubusercontent.com/CITY512/scripts/main/freeanims.lua", 
     ["zzz hub"] = "https://rawscripts.net/raw/Brookhaven-RP-ZZZ-Hub-Cracked-SOURCE-56578", 
     ["Abusall"] = "https://raw.githubusercontent.com/bocaj111004/Abysall/refs/heads/main/Loader.luau", 
-    ["Ringta (dead rail)"] = "https://raw.githubusercontent.com/erewe23/deadrailsring.github.io/refs/heads/main/ringta.lua", 
+    ["Ringta"] = "https://raw.githubusercontent.com/erewe23/deadrailsring.github.io/refs/heads/main/ringta.lua", 
     ["GAE FakeAnimation"] = "https://rawscripts.net/raw/Universal-Script-GAE-SIMPLIFIED-27193", 
     ["jujutsuer v2"] = "https://rawscripts.net/raw/HEAD-OF-HEI-Jujutsu-Shenanigans-JujutsuerV2-92468", 
     ["foxname"] = "https://rawscripts.net/raw/Survive-Zombie-Arena-Foxname-instant-kill-and-auto-play-etc-keyless-218156", 
@@ -361,13 +333,13 @@ sections.teleport:CreateButton("Tp position saver", function()
     if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
         savedTeleportCFrame = lp.Character.HumanoidRootPart.CFrame
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "X-nT",
+            Title = "tung tung ác wỷ",
             Text = "Vị trí đã được lưu thành công!",
             Duration = 3
         })
     else
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "X-nT",
+            Title = "tung tung ác wỷ",
             Text = "Không tìm thấy chỗ để lưu vị trí!",
             Duration = 3
         })
@@ -380,19 +352,118 @@ sections.teleport:CreateButton("TP to save position", function()
             lp.Character.HumanoidRootPart.CFrame = savedTeleportCFrame
         else
             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "X-nT",
+                Title = "tung tung ác wỷ",
                 Text = "Không tìm thấy chỗ để dịch chuyển!",
                 Duration = 3
             })
         end
     else
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "X-nT",
+            Title = "tung tung ác wỷ",
             Text = "Bạn chưa đặt vị trí Tp nào trước đó!",
             Duration = 3
         })
     end
 end)
+
+sections.float:CreateButton("Float", function()
+    if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+        savedFloatCFrame = lp.Character.HumanoidRootPart.CFrame
+        if floatPart then pcall(function() floatPart:Destroy() end) floatPart = nil end
+        floatPart = Instance.new("Part")
+        floatPart.Size = Vector3.new(floatSizeValue, 1, floatSizeValue)
+        floatPart.CFrame = savedFloatCFrame * CFrame.new(0, -3.5, 0)
+        floatPart.Anchored = true
+        floatPart.Transparency = floatTransValue
+        floatPart.Material = Enum.Material.SmoothPlastic
+        floatPart.Color = floatColorValue
+        floatPart.Parent = workspace
+        lp.Character.HumanoidRootPart.CFrame = savedFloatCFrame
+    end
+end)
+
+sections.float:CreateButton("Delete Float", function()
+    savedFloatCFrame = nil
+    if floatPart then pcall(function() floatPart:Destroy() end) floatPart = nil end
+end)
+
+sections.float:CreateSlider("float Size", 5, 3667, 15, true, function(value)
+    floatSizeValue = value
+    if floatPart and floatPart.Parent then floatPart.Size = Vector3.new(value, 1, value) end
+end)
+
+sections.float:CreateColorpicker("float Color", function(color, transparency)
+    floatColorValue = color
+    if floatPart and floatPart.Parent then floatPart.Color = color end
+end)
+
+sections.float:CreateSlider("float Transparency", 0, 100, 50, true, function(value)
+    floatTransValue = value / 100
+    if floatPart and floatPart.Parent then floatPart.Transparency = floatTransValue end
+end)
+
+local function getPlayerNames()
+    local names = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= lp then
+            table.insert(names, player.Name)
+        end
+    end
+    if #names == 0 then table.insert(names, "Không có ai trong server") end
+    return names
+end
+
+sections.orbit_section:CreateToggle("Enable Orbit", false, function(value)
+    OrbitEnabled = value
+end)
+
+local player_list = getPlayerNames()
+local PlayerDropdown = sections.orbit_section:CreateDropdown(
+    "select player",
+    player_list,
+    function(value)
+        TargetPlayerName = value
+    end,
+    player_list[1] or "",
+    false
+)
+
+sections.orbit_section:CreateButton("refresh list", function()
+    local updatedList = getPlayerNames()
+    PlayerDropdown:UpdateOptions(updatedList)
+end)
+
+sections.orbit_section:CreateDropdown(
+    "select Mode",
+    {"orbit", "above", "under", "behind"},
+    function(value)
+        OrbitMode = value
+    end,
+    "Normal",
+    false
+)
+
+sections.orbit_section:CreateSlider(
+    "Khoảng cách (Distance)",
+    2,
+    50,
+    5,
+    true,
+    function(value)
+        OrbitDistance = value
+    end
+)
+
+sections.orbit_section:CreateSlider(
+    "Tốc độ quay (Normal Mode)",
+    1,
+    20,
+    2,
+    true,
+    function(value)
+        OrbitSpeed = value
+    end
+)
 
 sections.lag:CreateButton("delete VFX", function()
     for _, v in pairs(workspace:GetDescendants()) do
@@ -418,11 +489,10 @@ sections.lag:CreateButton("Fix Lag", function()
     end
 end)
 
-
 sections.sys_control:CreateToggle("Anti AFK", false, function(state) antiAfk = state end)
 
 local maxPlayersHop = 10
-sections.sys_control:CreateSlider("Server Hop Max Players", 1, 100, 10, true, function(value)
+sections.sys_control:CreateSlider("Max Players", 1, 100, 10, true, function(value)
     maxPlayersHop = value
 end)
 
@@ -454,7 +524,6 @@ end)
 sections.sys_control:CreateDropdown("Font", stored_fonts, function(value)
     window:SetFont(value)
 end, "SourceSans", false)
-
 
 local function create(ty, prop) local obj = Drawing.new(ty) for i, v in pairs(prop) do obj[i] = v end return obj end
 
@@ -534,7 +603,7 @@ for _, p in pairs(Players:GetPlayers()) do addESP(p) end
 Players.PlayerAdded:Connect(addESP) Players.PlayerRemoving:Connect(removeESP)
 
 local renderConn, steppedConn, steppedConn2
-renderConn = RunService.RenderStepped:Connect(function()
+renderConn = RunService.RenderStepped:Connect(function(deltaTime)
     if fovCircle then
         fovCircle.Visible = aimShowPOV
         if fovCircle.Visible then
@@ -587,6 +656,32 @@ renderConn = RunService.RenderStepped:Connect(function()
     pcall(function() for part, _ in pairs(originalHitbox) do if not part or not part.Parent then originalHitbox[part] = nil end end end)
     local myChar = lp.Character local myHRP = myChar and (myChar:FindFirstChild("HumanoidRootPart") or myChar:FindFirstChild("Torso"))
     
+    if OrbitEnabled and TargetPlayerName ~= "" and TargetPlayerName ~= "Không có ai trong server" and myHRP then
+        for _, part in ipairs(myChar:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+        myHRP.AssemblyLinearVelocity = Vector3.zero
+        myHRP.AssemblyAngularVelocity = Vector3.zero
+        local targetPlayer = Players:FindFirstChild(TargetPlayerName)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetRoot = targetPlayer.Character.HumanoidRootPart
+            if OrbitMode == "orbit" then
+                currentAngle = currentAngle + (OrbitSpeed * deltaTime)
+                local offsetX = math.cos(currentAngle) * OrbitDistance
+                local offsetZ = math.sin(currentAngle) * OrbitDistance
+                myHRP.CFrame = CFrame.new(targetRoot.Position + Vector3.new(offsetX, 0, offsetZ), targetRoot.Position)
+            elseif OrbitMode == "above" then
+                myHRP.CFrame = targetRoot.CFrame * CFrame.new(0, OrbitDistance, 0) * CFrame.Angles(math.rad(90), 0, 0)
+            elseif OrbitMode == "under" then
+                myHRP.CFrame = targetRoot.CFrame * CFrame.new(0, -OrbitDistance, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+            elseif OrbitMode == "behind" then
+                myHRP.CFrame = targetRoot.CFrame * CFrame.new(0, 0, OrbitDistance)
+            end
+        end
+    end
+
     for plr, esp in pairs(espCache) do
         local successLoop = pcall(function()
             if espTeam and plr.Team == lp.Team then safeHide(esp) return end
@@ -629,14 +724,14 @@ renderConn = RunService.RenderStepped:Connect(function()
                         esp.highlight.FillColor = espColors.ChamsFill
                         esp.highlight.FillTransparency = chamsFillTransparency
                     else
-                        esp.highlight.FillTransparency = 1 -- Ẩn nền đi khi tắt Chams
+                        esp.highlight.FillTransparency = 1
                     end
                     
                     if espHighlight then
                         esp.highlight.OutlineColor = espColors.ChamsOutline
                         esp.highlight.OutlineTransparency = chamsOutlineTransparency
                     else
-                        esp.highlight.OutlineTransparency = 1 -- Ẩn viền đi khi tắt Highlight
+                        esp.highlight.OutlineTransparency = 1
                     end
                 else
                     if esp.highlight then esp.highlight.Enabled = false end
